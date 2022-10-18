@@ -25,7 +25,7 @@ class RC5 {
     private val P: UInt = if (round(nedoP) % 2 != 0.0) round(nedoP).toUInt() else if (round(nedoP) > nedoP) round(nedoP).toUInt() - 1u else round(nedoP).toUInt() + 1u
     private val Q: UInt = if (round(nedoQ) % 2 != 0.0) round(nedoQ).toUInt() else if (round(nedoQ) > nedoQ) round(nedoQ).toUInt() - 1u else round(nedoQ).toUInt() + 1u
 
-    fun FillLSArrays() : UIntArray {
+    private fun fillLSArrays() : UIntArray {
         S = UIntArray(t.toInt())
         L = UIntArray(c.toInt())
         L[c - 1] = 0u
@@ -100,7 +100,7 @@ class RC5 {
     }
     fun decrypt(mainText : EditText, keyText: EditText, keyIsHex: Boolean, keyIsASCII: Boolean, textIsHex: Boolean, textIsASCII: Boolean) : Pair<String, String> {
         keyBytes = setKeyBytes(keyText,keyIsHex, keyIsASCII)
-        S = FillLSArrays()
+        S = fillLSArrays()
         val ab = setAB(mainText, textIsHex, textIsASCII)
         var a = ab.first
         var b = ab.second
@@ -110,21 +110,18 @@ class RC5 {
         }
         b -= S[1]
         a -= S[0]
-        var temp = ""
         var res = ""
         for (i in 0 until wordCount / 4 step 2) {
-            temp = a.toString(16).padStart(8, '0')[i].toString() + a.toString(16).padStart(8, '0')[i + 1].toString()
-            res += temp.toInt(16).toChar()
+            res += (a.toString(16).padStart(8, '0')[i].toString() + a.toString(16).padStart(8, '0')[i + 1].toString()).toInt(16).toChar()
         }
         for (i in 0 until wordCount / 4 step 2) {
-            temp = b.toString(16).padStart(8, '0')[i].toString() + b.toString(16).padStart(8, '0')[i + 1].toString()
-            res += temp.toInt(16).toChar()
+            res += (b.toString(16).padStart(8, '0')[i].toString() + b.toString(16).padStart(8, '0')[i + 1].toString()).toInt(16).toChar()
         }
         return (a.toString(16).padStart(8, '0') + " " + b.toString(16).padStart(8, '0')).uppercase() to res
     }
     fun encrypt(mainText: EditText, keyText: EditText, keyIsHex: Boolean, keyIsASCII: Boolean, textIsHex: Boolean, textIsASCII: Boolean) : Pair<String, String>{
         keyBytes = setKeyBytes(keyText,keyIsHex, keyIsASCII)
-        S = FillLSArrays()
+        S = fillLSArrays()
         val ab = setAB(mainText, textIsHex, textIsASCII)
         var a = (ab.first + S[0]) % mod
         var b = (ab.second + S[1]) % mod
@@ -132,15 +129,12 @@ class RC5 {
             a = (ROL(a xor b, (b % wordCount.toUInt()).toInt()) + S[2 * ind]) % mod
             b = (ROL(b xor a, (a % wordCount.toUInt()).toInt()) + S[2 * ind + 1]) % mod
         }
-        var temp = ""
         var res = ""
         for (i in 0 until wordCount / 4 step 2) {
-            temp = a.toString(16).padStart(8, '0')[i].toString() + a.toString(16).padStart(8, '0')[i + 1].toString()
-            res += temp.toInt(16).toChar()
+            res += (a.toString(16).padStart(8, '0')[i].toString() + a.toString(16).padStart(8, '0')[i + 1].toString()).toInt(16).toChar()
         }
         for (i in 0 until wordCount / 4 step 2) {
-            temp = b.toString(16).padStart(8, '0')[i].toString() + b.toString(16).padStart(8, '0')[i + 1].toString()
-            res += temp.toInt(16).toChar()
+            res += (b.toString(16).padStart(8, '0')[i].toString() + b.toString(16).padStart(8, '0')[i + 1].toString()).toInt(16).toChar()
         }
         return (a.toString(16) + " " + b.toString(16)).uppercase() to res
     }
